@@ -7,6 +7,7 @@
 
 #if canImport(SwiftUI)
 import SwiftUI
+import GitHubAccessModels
 
 internal struct SetupView: View {
     
@@ -26,7 +27,7 @@ internal struct SetupView: View {
         _ setup: ((SetupResult) -> Void)?,
         incomingURL: Binding<URL?>,
         setupResult: Binding<SetupResult?> = .constant(nil),
-        windowId: String,
+        windowId: String
     ) {
         self.windowId = windowId
         self.setup = setup
@@ -134,12 +135,15 @@ internal struct SetupView: View {
     }
     
     private func extractInstallationId(from url: URL) throws(SetupError) -> Int {
-        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let installationIdString = components.queryItems?.first(where: { $0.name == "installation_id" })?.value,
-              let installationId = Int(installationIdString) else {
+        // GitHubSetupCallback applies the same rule as github-access-vapor's setup page: a single,
+        // positive, numeric installation_id. A `request` callback carries no installation, which
+        // this flow — reporting an installation ID — treats as invalid, as it always has.
+        guard let callback = try? GitHubSetupCallback(url: url),
+              let installationID = callback.installationID,
+              let installationId = Int(exactly: installationID) else {
             throw SetupError.invalidInstallationID
         }
-        
+
         return installationId
     }
 }
