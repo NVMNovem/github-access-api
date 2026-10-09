@@ -1,8 +1,27 @@
 import Testing
-@testable import GitHubAccessAPI
+import GitHubAccessAPI
 
-@Test func example() async throws {
-    // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-    // Swift Testing Documentation
-    // https://developer.apple.com/documentation/testing
+@Suite("GitHubAccessAPI")
+struct GitHubAccessAPITests {
+
+    @Test("Re-exports GitHubAccessModels, so one import is enough")
+    func reExportsModels() throws {
+        let link = try GitHubInstallLink(appSlug: "octoapp", state: "s")
+
+        #expect(link.url.absoluteString == "https://github.com/apps/octoapp/installations/new?state=s")
+    }
+
+    @Test("SetupResult and SetupError keep their public shape")
+    func setupTypesAreUnchanged() {
+        let success: SetupResult = .success(12_345_678)
+        let failure: SetupResult = .failure(SetupError.invalidInstallationID)
+
+        #expect((try? success.get()) == 12_345_678)
+        #expect(throws: SetupError.self) { try failure.get() }
+
+        switch SetupError.unknown {
+        case .invalidInstallationID, .unknown:
+            break
+        }
+    }
 }

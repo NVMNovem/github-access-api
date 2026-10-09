@@ -57,12 +57,22 @@ struct GitHubSetupModifier: ViewModifier {
 
 extension View {
     
-    /// > Important: ``DocumentGroup`` scenes ignore the URL handling. Instead,
+    /// Finishes a GitHub App installation when the app is opened with the setup URL, such as
+    /// `<project>://github/setup-complete?installation_id=…`, presenting progress in a sheet.
+    ///
+    /// The URL is parsed with `GitHubSetupCallback`; a missing or non-numeric `installation_id`
+    /// reports ``SetupError/invalidInstallationID``.
+    ///
+    /// - Parameter setup: Called once with the installation ID, or with the error that stopped the
+    ///   setup.
+    /// - Returns: The view, handling setup URLs.
+    ///
+    /// > Important: `DocumentGroup` scenes ignore the URL handling. Instead,
     ///   document scenes decide whether to open a new scene to handle an
     ///   external event by comparing the incoming URL or user activity's
     ///   <doc://com.apple.documentation/documentation/Foundation/NSUserActivity/1418086-webpageurl>
     ///   against the document group's supported types.
-    ///   Use the ``GitHubSetup`` scene when working with ``DocumentGroup`` scenes instead.
+    ///   Use the ``GitHubSetup`` scene when working with `DocumentGroup` scenes instead.
     ///
     public func gitHubSetup(setup: @escaping (Result<Int, Error>) -> Void) -> some View {
         self.modifier(GitHubSetupModifier(setup: setup))
