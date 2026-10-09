@@ -24,9 +24,12 @@ struct GitHubInstallLinkTests {
 
     @Test("Leaves the query off without a state, or with an empty one")
     func withoutState() throws {
-        #expect(try GitHubInstallLink(appSlug: "octoapp").url.absoluteString == "https://github.com/apps/octoapp/installations/new")
-        #expect(try GitHubInstallLink(appSlug: "octoapp", state: "").url.query == nil)
-        #expect(try GitHubInstallLink(appSlug: "octoapp", state: "").state == nil)
+        let actual14 = try GitHubInstallLink(appSlug: "octoapp").url.absoluteString
+        #expect(actual14 == "https://github.com/apps/octoapp/installations/new")
+        let actual15 = try GitHubInstallLink(appSlug: "octoapp", state: "").url.query
+        #expect(actual15 == nil)
+        let actual16 = try GitHubInstallLink(appSlug: "octoapp", state: "").state
+        #expect(actual16 == nil)
     }
 
     @Test("Percent-encodes every reserved character in the state, including +")
@@ -55,7 +58,8 @@ struct GitHubInstallLinkTests {
         let query = try #require(link.url.query)
         let redirect = try #require(URL(string: "https://manager.example.com/github/setup?installation_id=9&setup_action=install&\(query)"))
 
-        #expect(try GitHubSetupCallback(url: redirect).state == state)
+        let actual17 = try GitHubSetupCallback(url: redirect).state
+        #expect(actual17 == state)
     }
 
     @Test(
@@ -70,6 +74,7 @@ struct GitHubInstallLinkTests {
 
     @Test("Accepts letters, digits, - and _")
     func acceptsSafeSlug() throws {
-        #expect(try GitHubInstallLink(appSlug: "Funico_Server-Manager2").url.path == "/apps/Funico_Server-Manager2/installations/new")
+        let actual18 = try GitHubInstallLink(appSlug: "Funico_Server-Manager2").url.path
+        #expect(actual18 == "/apps/Funico_Server-Manager2/installations/new")
     }
 }

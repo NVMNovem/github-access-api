@@ -57,7 +57,8 @@ struct GitHubReleaseTests {
     func roundTrips() throws {
         let release = try decode(GitHubRelease.self, from: GitHubFixtures.release)
 
-        #expect(try roundTrip(release) == release)
+        let actual23 = try roundTrip(release)
+        #expect(actual23 == release)
     }
 
     @Test("Encodes GitHub's snake_case keys and ISO 8601 timestamps")
@@ -88,7 +89,8 @@ struct GitHubReleaseTests {
         #expect(release.body == nil)
         #expect(release.publishedAt == nil)
         #expect(release.assets.isEmpty)
-        #expect(try roundTrip(release) == release)
+        let actual24 = try roundTrip(release)
+        #expect(actual24 == release)
     }
 
     @Test("Decodes github-access-vapor's webhook release with nothing lost")

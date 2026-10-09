@@ -41,7 +41,8 @@ struct GitHubInstallationTests {
     func roundTrips() throws {
         let installation = try decode(GitHubInstallation.self, from: GitHubFixtures.installation)
 
-        #expect(try roundTrip(installation) == installation)
+        let actual1 = try roundTrip(installation)
+        #expect(actual1 == installation)
 
         let object = try jsonObject(installation)
         #expect(object["repository_selection"] as? String == "selected")
@@ -64,7 +65,8 @@ struct GitHubInstallationTests {
         #expect(installation.account?.handle == "octo-business")
         #expect(installation.repositorySelection == .all)
         #expect(installation.targetType == .enterprise)
-        #expect(try roundTrip(installation) == installation)
+        let actual2 = try roundTrip(installation)
+        #expect(actual2 == installation)
     }
 
     @Test("Unknown open-type values survive a round trip")
@@ -75,7 +77,8 @@ struct GitHubInstallationTests {
         #expect(installation.repositorySelection?.rawValue == "some-future-mode")
         #expect(installation.targetType?.rawValue == "Galaxy")
         #expect(installation.permissions["contents"]?.rawValue == "superuser")
-        #expect(try roundTrip(installation) == installation)
+        let actual3 = try roundTrip(installation)
+        #expect(actual3 == installation)
     }
 
     @Test("A repository reference from an installation_repositories webhook")
@@ -88,7 +91,8 @@ struct GitHubInstallationTests {
         #expect(repository.fullName == "octocat/Hello-World")
         #expect(repository.owner == "octocat")
         #expect(repository.isPrivate == false)
-        #expect(try roundTrip(repository) == repository)
+        let actual4 = try roundTrip(repository)
+        #expect(actual4 == repository)
 
         let object = try jsonObject(repository)
         #expect(object["full_name"] as? String == "octocat/Hello-World")
@@ -103,7 +107,8 @@ struct GitHubInstallationTests {
         #expect(repository.cloneURL == "https://github.com/octocat/Hello-World.git")
         #expect(repository.htmlURL == "https://github.com/octocat/Hello-World")
         #expect(repository.defaultBranch == "master")
-        #expect(try roundTrip(repository) == repository)
+        let actual5 = try roundTrip(repository)
+        #expect(actual5 == repository)
     }
 
     @Test("A reference built from owner/name derives its name")

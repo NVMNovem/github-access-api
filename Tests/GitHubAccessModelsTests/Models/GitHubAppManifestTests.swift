@@ -33,7 +33,8 @@ struct GitHubAppManifestTests {
         #expect(manifest.isPublic)
         #expect(manifest.defaultPermissions == ["issues": .write, "checks": .write])
         #expect(manifest.defaultEvents == ["issues", "issue_comment", "check_suite", "check_run"])
-        #expect(try roundTrip(manifest) == manifest)
+        let actual19 = try roundTrip(manifest)
+        #expect(actual19 == manifest)
     }
 
     @Test("Encodes back to exactly GitHub's documented JSON")
@@ -76,8 +77,10 @@ struct GitHubAppManifestTests {
             redirectURL: URL(string: "https://m.test/cb")!
         )
 
-        #expect(try jsonObject(manifest)["setup_on_update"] == nil)
-        #expect(try jsonObject(manifest)["setup_url"] == nil)
+        let actual20 = try jsonObject(manifest)["setup_on_update"]
+        #expect(actual20 == nil)
+        let actual21 = try jsonObject(manifest)["setup_url"]
+        #expect(actual21 == nil)
     }
 
     @Test("jsonString is compact, key-sorted and leaves slashes unescaped")
@@ -97,7 +100,8 @@ struct GitHubAppManifestTests {
         #expect(registration.url.absoluteString == "https://github.com/settings/apps/new?state=abc123")
         #expect(registration.state == "abc123")
         #expect(registration.formFieldName == "manifest")
-        #expect(registration.manifestJSON == (try serverManager.jsonString()))
+        let expectedJSON = try serverManager.jsonString()
+        #expect(registration.manifestJSON == expectedJSON)
     }
 
     @Test("Registration URL for an organization, with the state encoded")
@@ -162,7 +166,8 @@ struct GitHubAppManifestTests {
         #expect(conversion.pem.hasSuffix("-----END RSA PRIVATE KEY-----\n"))
 
         // A secret store must receive every secret back.
-        #expect(try roundTrip(conversion) == conversion)
+        let actual22 = try roundTrip(conversion)
+        #expect(actual22 == conversion)
         let object = try jsonObject(conversion)
         #expect(object["client_secret"] as? String == conversion.clientSecret)
         #expect(object["webhook_secret"] as? String == conversion.webhookSecret)
@@ -178,7 +183,8 @@ struct GitHubAppManifestTests {
 
         for rendered in [String(describing: conversion), "\(conversion)", String(reflecting: conversion), dumped] {
             #expect(!rendered.contains(conversion.clientSecret))
-            #expect(!rendered.contains(try #require(conversion.webhookSecret)))
+            let secret = try #require(conversion.webhookSecret)
+            #expect(!rendered.contains(secret))
             #expect(!rendered.contains("PRIVATE KEY"))
             #expect(!rendered.contains("MIIEowIBAAKCAQEA"))
             #expect(rendered.contains("octoapp"))

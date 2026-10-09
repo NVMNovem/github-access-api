@@ -27,7 +27,7 @@ internal struct SetupView: View {
         _ setup: ((SetupResult) -> Void)?,
         incomingURL: Binding<URL?>,
         setupResult: Binding<SetupResult?> = .constant(nil),
-        windowId: String,
+        windowId: String
     ) {
         self.windowId = windowId
         self.setup = setup

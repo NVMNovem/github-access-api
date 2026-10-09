@@ -36,9 +36,12 @@ struct GitHubSetupCallbackTests {
 
     @Test("update and an unknown future action pass through")
     func passesActionsThrough() throws {
-        #expect(try callback("https://x.test/?installation_id=1&setup_action=update").setupAction == .update)
-        #expect(try callback("https://x.test/?installation_id=1&setup_action=transfer").setupAction?.rawValue == "transfer")
-        #expect(try callback("https://x.test/?installation_id=1&setup_action=").setupAction == nil)
+        let actual6 = try callback("https://x.test/?installation_id=1&setup_action=update").setupAction
+        #expect(actual6 == .update)
+        let actual7 = try callback("https://x.test/?installation_id=1&setup_action=transfer").setupAction?.rawValue
+        #expect(actual7 == "transfer")
+        let actual8 = try callback("https://x.test/?installation_id=1&setup_action=").setupAction
+        #expect(actual8 == nil)
     }
 
     @Test("A request may come without an installation ID")
@@ -81,9 +84,12 @@ struct GitHubSetupCallbackTests {
 
     @Test("Accepts what Int64(_:) accepts, as the vapor setup page does, up to Int64.max")
     func acceptsVaporRule() throws {
-        #expect(try callback("https://x.test/?installation_id=%2B42").installationID == 42)
-        #expect(try callback("https://x.test/?installation_id=9223372036854775807").installationID == .max)
-        #expect(try callback("https://x.test/?installation_id=007").installationID == 7)
+        let actual9 = try callback("https://x.test/?installation_id=%2B42").installationID
+        #expect(actual9 == 42)
+        let actual10 = try callback("https://x.test/?installation_id=9223372036854775807").installationID
+        #expect(actual10 == .max)
+        let actual11 = try callback("https://x.test/?installation_id=007").installationID
+        #expect(actual11 == 7)
     }
 
     @Test("A duplicated parameter is refused, not resolved")
@@ -115,14 +121,16 @@ struct GitHubSetupCallbackTests {
         #expect(throws: GitHubSetupCallbackError.missingInstallationID) {
             try GitHubSetupCallback(installationID: nil, setupAction: .install)
         }
-        #expect(try GitHubSetupCallback(installationID: nil, setupAction: .request).installationID == nil)
+        let actual12 = try GitHubSetupCallback(installationID: nil, setupAction: .request).installationID
+        #expect(actual12 == nil)
     }
 
     @Test("Round trips through JSON with GitHub's parameter names, and validates on decode")
     func codable() throws {
         let parsed = try callback("https://x.test/?installation_id=12&setup_action=update&state=s")
 
-        #expect(try roundTrip(parsed) == parsed)
+        let actual13 = try roundTrip(parsed)
+        #expect(actual13 == parsed)
 
         let object = try jsonObject(parsed)
         #expect(object["installation_id"] as? Int == 12)
